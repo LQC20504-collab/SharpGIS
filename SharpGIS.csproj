@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <RootNamespace>SharpGIS</RootNamespace>
+    <AssemblyName>SharpGIS</AssemblyName>
+    <Product>SharpGIS</Product>
+    <AssemblyTitle>SharpGIS 栅格遥感影像处理平台</AssemblyTitle>
+    <Version>1.0.0</Version>
+
+    <!-- 固定输出到 bin\<Configuration>\net48，避免因 Platform 变化产生第二套输出目录 -->
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <DebugType>portable</DebugType>
+    <AppConfig>App.config</AppConfig>
+
+    <!-- 禁止 GDAL.Native 把原生库作为 Content 平铺到输出根目录 -->
+    <ContentGDALInteropFiles>false</ContentGDALInteropFiles>
+    <!-- 关闭包自带的“全量复制”（含 x86），改由下方 CopyGdalRuntime 只复制 x64 -->
+    <CopyGDALInteropFiles>false</CopyGDALInteropFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <!-- JavaScriptSerializer：CA-Markov 引擎的参数/指标 JSON -->
+    <Reference Include="System.Web.Extensions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- CA-Markov 的 Python 引擎随程序一起输出（不参与编译） -->
+    <None Update="Engine\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ExcludeAssets=contentFiles：GDAL 包的 .cs.pp 模板不会被当作源码编译 -->
+    <PackageReference Include="GDAL" Version="3.12.1" ExcludeAssets="contentFiles" />
+    <PackageReference Include="GDAL.Native" Version="3.12.1" />
+  </ItemGroup>
+
+  <!-- 只把 x64 运行时 + data/share 复制到 $(OutDir)gdal\ -->
+  <Target Name="CopyGdalRuntime" AfterTargets="Build" Condition="'$(CopyGDALInteropFiles)' == 'false'">
+    <ItemGroup>
+      <GdalRuntime Include="$(NuGetPackageRoot)gdal.native\3.12.1\build\gdal\**\*.*"
+                   Exclude="$(NuGetPackageRoot)gdal.native\3.12.1\build\gdal\x86\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(GdalRuntime)" SkipUnchangedFiles="true"
+          DestinationFiles="@(GdalRuntime->'$(OutDir)gdal\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
+
+</Project>

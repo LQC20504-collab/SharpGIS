@@ -1,0 +1,7 @@
+# SharpGIS CA-Markov 引擎依赖
+# 用法：<python.exe> -m pip install -r requirements.txt
+numpy>=1.20
+scipy>=1.6
+scikit-learn>=0.24
+rasterio>=1.2
+matplotlib>=3.4

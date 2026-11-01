@@ -1,0 +1,16 @@
+* text=auto
+
+*.cs    text diff=csharp
+*.py    text
+*.md    text
+*.json  text
+*.xml   text
+*.config text
+
+*.png   binary
+*.jpg   binary
+*.gif   binary
+*.tif   binary
+*.img   binary
+*.dll   binary
+*.exe   binary

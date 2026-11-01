@@ -1,0 +1,24 @@
+# ---- 构建输出（bin 含 GDAL 原生库，数 GB，绝不能入库）----
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# ---- 本地测试数据与运行产物 ----
+testdata/
+artifacts/
+
+# ---- 本机 agent / 编辑器状态 ----
+.workbuddy/
+
+# ---- GDAL/PROJ 旁文件（源数据只读，正常不应出现）----
+*.aux.xml
+*.ovr
+*.rrd
+*.enp
+
+# ---- 备份包 ----
+*.tar.gz
+*.zip
